@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Auth;
 using IDP.Application.Handlers.User;
 using MediatR;
 using System.Reflection;
@@ -29,6 +30,8 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat = "'v'V";
     options.SubstituteApiVersionInUrl = true;
 });
+
+Extension.AddJwt(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
