@@ -1,7 +1,10 @@
 using Asp.Versioning;
 using Auth;
 using IDP.Application.Handlers.User;
+using IDP.Domain.IRepositories.Commands;
+using IDP.Infrastructure.Repositories.Commands;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(typeof(UserCommandHandler).GetTypeInfo().Assembly);
+
+builder.Services.AddScoped<IOtpCommandRepository, OtpCommandRepository>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -32,6 +37,12 @@ builder.Services.AddApiVersioning(options =>
 });
 
 Extension.AddJwt(builder.Services, builder.Configuration);
+
+//Redis settings
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetValue<string>("CacheSettings:RedisUrl");
+});
 
 var app = builder.Build();
 
